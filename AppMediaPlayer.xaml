@@ -5,27 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:INF_0996_Trabalho"
         mc:Ignorable="d"
-        Title="Media Player" Height="400" Width="800"
-        MinWidth="400" SizeToContent="WidthAndHeight">
+        Title="Media Player" Height="400" Width="850" WindowState="Maximized">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="9*"/>
         </Grid.RowDefinitions>
+
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Margin="3" Padding="3"
+            <Button Margin="3" Padding="3" Height="25"
                 CommandParameter="{Binding}"
                 Command="{Binding NewMedia}"
                 Content="Adicionar Midia"/>
-            <Button Margin="3" Padding="3"
+            <Button Margin="3" Padding="3" Height="25"
                 CommandParameter="{Binding}"
                 Command="{Binding DeleteMedia}"
                 Content="Deletar"/>
-            <Button Margin="3" Padding="3"
+            <Button Margin="3" Padding="3" Height="25"
                 CommandParameter="{Binding}"
                 Command="{Binding PlayMedia}"
                 Content="Play"/>
         </StackPanel>
+
         <ScrollViewer Grid.Row="1"
                       HorizontalScrollBarVisibility="Visible"
                       VerticalScrollBarVisibility="Hidden">
@@ -34,12 +35,16 @@
             IsReadOnly="True"
             SelectedItem="{Binding SelectedMedia}">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Nome" Binding="{Binding Name}"/>
-                    <DataGridTextColumn Header="Autor" Binding="{Binding Author}"/>
-                    <DataGridTextColumn Header="Genero" Binding="{Binding Genre}"/>
+                    <DataGridTextColumn Header="Álbum" Binding="{Binding Album}"/>
+                    <DataGridTextColumn Header="Titulo" Binding="{Binding Title}"/>
                     <DataGridTextColumn Header="Duracao" Binding="{Binding Duration}"/>
+                    <DataGridTextColumn Header="Artista" Binding="{Binding Artist}"/>
+                    <DataGridTextColumn Header="Artista Participante" Binding="{Binding ParticipatingArtist}"/>
+                    <DataGridTextColumn Header="Genero" Binding="{Binding Genre}"/>
+                    <DataGridTextColumn Header="Tamanho" Binding="{Binding Size}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </ScrollViewer>
+
     </Grid>
 </Window>

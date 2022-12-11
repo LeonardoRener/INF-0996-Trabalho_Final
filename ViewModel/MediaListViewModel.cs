@@ -1,11 +1,24 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.IO;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CommunityToolkit.Mvvm.Messaging.Messages;
 using INF_0996_Trabalho.Model;
 using Microsoft.Win32;
+using INF_0996_Trabalho.Util;
 
 namespace INF_0996_Trabalho.ViewModel
 {
+    public class OpenWindowMessage : ValueChangedMessage<PlayMediaViewModel>
+    {
+        public OpenWindowMessage(PlayMediaViewModel playMediaViewModel) : base(playMediaViewModel)
+        {
+        }
+    }
+
     public class MediaListViewModel : ObservableObject
     {
         // Lista de mediaas.
@@ -27,22 +40,35 @@ namespace INF_0996_Trabalho.ViewModel
         {
             get { return _selectedMedia; }
             set { SetProperty(ref _selectedMedia, value);
-                    DeleteMedia.NotifyCanExecuteChanged(); }
+                    DeleteMedia.NotifyCanExecuteChanged();
+                    PlayMedia.NotifyCanExecuteChanged(); }
         }
 
         public MediaListViewModel()
         {
             this.NewMedia = new RelayCommand(NewCMD);
-            this.PlayMedia = new RelayCommand(PlayCMD);
-            this.DeleteMedia = new RelayCommand(DeleteCMD);
+            this.PlayMedia = new RelayCommand(PlayCMD, CanPlayOrDeleteCMD);
+            this.DeleteMedia = new RelayCommand(DeleteCMD, CanPlayOrDeleteCMD);
             this.MediaList = new ObservableCollection<Media>();
             LoadMediaList();
         }
 
+        /// <summary>
+        /// Carrega a lista de midias utilizando os arquivos dos diretorios Music e Video do computador.
+        /// </summary>
         private void LoadMediaList()
         {
-            var media1 = new Media(@"C:\Users\leona\Music\Imagine Dragons Enemy Audio");
-            this.MediaList.Add(media1);
+            DirectoryInfo musicsPath = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic));
+            DirectoryInfo videosPath = new DirectoryInfo(Environment.GetFolderPath(Environment.SpecialFolder.MyVideos));
+            List<FileInfo> listPaths = new List<FileInfo>();
+
+            listPaths.AddRange(musicsPath.GetFilesByExtensions(".mp3",".mpg",".mpeg",".mp4"));
+            listPaths.AddRange(videosPath.GetFilesByExtensions(".mp3",".mpg",".mpeg",".mp4"));
+
+            foreach(FileInfo path in listPaths)
+            {
+                this.MediaList.Add(new Media(path.FullName));
+            }
 
             if (this.MediaList.Count > 0)
                 this.SelectedMedia = this.MediaList[0];
@@ -77,7 +103,17 @@ namespace INF_0996_Trabalho.ViewModel
 
         private void PlayCMD()
         {
+            if (this.SelectedMedia != null)
+            {
+                var playMediaViewModel = new PlayMediaViewModel(this.SelectedMedia);
 
+                WeakReferenceMessenger.Default.Send(new OpenWindowMessage(playMediaViewModel));
+            }
+        }
+
+        private bool CanPlayOrDeleteCMD()
+        {
+            return this.SelectedMedia != null;
         }
         #endregion
     }
